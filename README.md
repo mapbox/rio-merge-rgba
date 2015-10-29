@@ -37,7 +37,8 @@ Options:
   --help                       Show this message and exit.
 ```
 
-`merge_rgba.py`
+`merge_rgba.py`:
+
 1. only accepts 4-band RGBA rasters
 2. writes the destination data to disk rather than an in-memory array
 3. reads/writes in windows corresponding to the destination block layout
@@ -58,8 +59,6 @@ By reading with `masked=False` and using the alpha band as the sole source of no
 ### Why not improve rio merge
 
 I tried but the speed advantage comes from avoiding masked reads. Once we improve the efficiency of masked reads or invent another mechanism for handling nodata masks that is more efficient, we can the windowed approach [back into rasterio](https://github.com/mapbox/rasterio/issues/507)
-
-### Benchmarks
 
 
 ### Benchmarks
