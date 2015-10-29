@@ -46,7 +46,7 @@ The differences are in the implementation - `merge_rgba.py`:
 
 ### Why windowed and why write to disk? 
 
-Memory efficiency. You'll never load more than `2 * blockxsize * blockysize` pixels into numpy arrays at one time, assuming garbage collection is infallable and there are no memory leaks.
+Memory efficiency. You'll never load more than `2 * blockxsize * blockysize` pixels into numpy arrays at one time, assuming garbage collection is infallible and there are no memory leaks.
 
 While this does mean reading and writing to disk more frequently, having spatially aligned data with identical block layouts (like scenetifs) can make that as efficient as possible. Also...
 
