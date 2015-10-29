@@ -94,7 +94,7 @@ Very promising. On the Landsat scenetif set from `s3://mapbox-pxm-live/scenes/7-
       <td>1.10</td>
     </tr>
     <tr>
-      <th>merge_aligned</th>
+      <th>merge_rgba</th>
       <td>83</td>
       <td>0.70</td>
     </tr>
@@ -107,7 +107,7 @@ Very promising. On the Landsat scenetif set from `s3://mapbox-pxm-live/scenes/7-
       <td>3.20</td>
     </tr>
     <tr>
-      <th>merge_aligned</th>
+      <th>merge_rgba</th>
       <td>107</td>
       <td>1.90</td>
     </tr>
@@ -120,7 +120,7 @@ Very promising. On the Landsat scenetif set from `s3://mapbox-pxm-live/scenes/7-
       <td>8.85</td>
     </tr>
     <tr>
-      <th>merge_aligned</th>
+      <th>merge_rgba</th>
       <td>115</td>
       <td>3.10</td>
     </tr>
@@ -133,7 +133,7 @@ Very promising. On the Landsat scenetif set from `s3://mapbox-pxm-live/scenes/7-
       <td>25.00</td>
     </tr>
     <tr>
-      <th>merge_aligned</th>
+      <th>merge_rgba</th>
       <td>121</td>
       <td>7.00</td>
     </tr>
@@ -146,7 +146,7 @@ Very promising. On the Landsat scenetif set from `s3://mapbox-pxm-live/scenes/7-
       <td>crashed at 38 minutes</td>
     </tr>
     <tr>
-      <th>merge_aligned</th>
+      <th>merge_rgba</th>
       <td>145</td>
       <td>19.80</td>
     </tr>
@@ -158,3 +158,13 @@ Note that the "merge_aligned" refered to in the charts is the same command, just
 ![mem](https://gist.githubusercontent.com/perrygeo/063dddae6fa134908861/raw/ac2c2200e564e8b89ed1d78383e962f22ccfa21c/mem.png)
 
 ![speed](https://gist.githubusercontent.com/perrygeo/063dddae6fa134908861/raw/ac2c2200e564e8b89ed1d78383e962f22ccfa21c/time.png)
+
+### Note about pixel alignment
+
+Since the inclusion of the [full cover window](https://github.com/mapbox/rasterio/pull/466) in rasterio, there is a possibility of including an additional bottom row or right column if the bounds of the destination are not directly aligned with the source.
+
+In rio merge, which reads the entire raster at once, this can manifest itself as one additional row and column on the bottom right edge of the image. The image within remains consistent.
+
+With `merge_rgba.py`, if we used the default full cover window, errors may appear within the image at block window boundaries where e.g. a 257x257 window is read into a 256x256 destination. To avoid this, we effectively embed a reimplementation of rasterio's `get_window` using the `round` operator which improves our chances that the pixel boundaries are snapped to appropriate bounds.
+
+You may see small differences between rio merge and merge_rgba as a result but they *should* be limited to the single bottom row and right-most column.
