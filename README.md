@@ -4,6 +4,7 @@ A `rio merge` alternative optimized for large RGBA scenetifs
 
 **Note**
 This repository is in limbo and may move in one of several directions:
+
 1. These optimizations may be pulled directly into `rasterio` (see [this issue](https://github.com/mapbox/rasterio/issues/507))
 2. This may become an intergrated part of `pxm`
 3. This may stay as an independent repo and become a legit pip-installable, tested module
@@ -56,4 +57,105 @@ By reading with `masked=False` and using the alpha band as the sole source of no
 
 ### Why not improve rio merge
 
-I tried but the speed advantage comes from avoiding masked reads. Once we improve the efficiency of masked reads or invent another mechanism for handling nodata masks that is more efficient, we can the windowed approach [back into rasterio](https://github.com/mapbox/rasterio/issues/507))
+I tried but the speed advantage comes from avoiding masked reads. Once we improve the efficiency of masked reads or invent another mechanism for handling nodata masks that is more efficient, we can the windowed approach [back into rasterio](https://github.com/mapbox/rasterio/issues/507)
+
+### Benchmarks
+
+
+### Benchmarks
+
+Very promising. On the Landsat scenetif set from `s3://mapbox-pxm-live/scenes/7-21-49*` - 23 rasters in total. I created reduced resolution versions of each in order to test the performance charachteristics as sizes increase.
+
+<table class="dataframe" border="1">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th>memory</th>
+      <th>seconds</th>
+    </tr>
+    <tr>
+      <th>resolution</th>
+      <th>pixels</th>
+      <th>height and width</th>
+      <th>func</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th rowspan="2" valign="top">300</th>
+      <th rowspan="2" valign="top">1089936</th>
+      <th rowspan="2" valign="top">1044</th>
+      <th>merge</th>
+      <td>135</td>
+      <td>1.10</td>
+    </tr>
+    <tr>
+      <th>merge_aligned</th>
+      <td>83</td>
+      <td>0.70</td>
+    </tr>
+    <tr>
+      <th rowspan="2" valign="top">150</th>
+      <th rowspan="2" valign="top">4359744</th>
+      <th rowspan="2" valign="top">2088</th>
+      <th>merge</th>
+      <td>220</td>
+      <td>3.20</td>
+    </tr>
+    <tr>
+      <th>merge_aligned</th>
+      <td>107</td>
+      <td>1.90</td>
+    </tr>
+    <tr>
+      <th rowspan="2" valign="top">90</th>
+      <th rowspan="2" valign="top">12103441</th>
+      <th rowspan="2" valign="top">3479</th>
+      <th>merge</th>
+      <td>412</td>
+      <td>8.85</td>
+    </tr>
+    <tr>
+      <th>merge_aligned</th>
+      <td>115</td>
+      <td>3.10</td>
+    </tr>
+    <tr>
+      <th rowspan="2" valign="top">60</th>
+      <th rowspan="2" valign="top">27237961</th>
+      <th rowspan="2" valign="top">5219</th>
+      <th>merge</th>
+      <td>750</td>
+      <td>25.00</td>
+    </tr>
+    <tr>
+      <th>merge_aligned</th>
+      <td>121</td>
+      <td>7.00</td>
+    </tr>
+    <tr>
+      <th rowspan="2" valign="top">30</th>
+      <th rowspan="2" valign="top">108910096</th>
+      <th rowspan="2" valign="top">10436</th>
+      <th>merge</th>
+      <td>1GB+ - crashed</td>
+      <td>crashed at 38 minutes</td>
+    </tr>
+    <tr>
+      <th>merge_aligned</th>
+      <td>145</td>
+      <td>19.80</td>
+    </tr>
+  </tbody>
+</table>
+
+Note that the "merge_aligned" refered to in the charts is the same command, just renamed:
+
+![mem](https://gist.githubusercontent.com/perrygeo/063dddae6fa134908861/raw/ac2c2200e564e8b89ed1d78383e962f22ccfa21c/mem.png)
+
+![speed](https://gist.githubusercontent.com/perrygeo/063dddae6fa134908861/raw/ac2c2200e564e8b89ed1d78383e962f22ccfa21c/time.png)
