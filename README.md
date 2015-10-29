@@ -11,7 +11,7 @@ This repository is in limbo and may move in one of several directions:
 
 ## What it it?
 
-`merge_rgba.py` is a CLI with nearly identical arguments to `rio merge`. They accomplish the same task, merging many rasters into one. The differences are in the implementation:
+`merge_rgba.py` is a CLI with nearly identical arguments to `rio merge`. They accomplish the same task, merging many rasters into one. 
 
 ```
 $ python merge_rgba.py --help
@@ -37,7 +37,7 @@ Options:
   --help                       Show this message and exit.
 ```
 
-`merge_rgba.py`:
+The differences are in the implementation - `merge_rgba.py`:
 
 1. only accepts 4-band RGBA rasters
 2. writes the destination data to disk rather than an in-memory array
@@ -58,7 +58,7 @@ By reading with `masked=False` and using the alpha band as the sole source of no
 
 ### Why not improve rio merge
 
-I tried but the speed advantage comes from avoiding masked reads. Once we improve the efficiency of masked reads or invent another mechanism for handling nodata masks that is more efficient, we can the windowed approach [back into rasterio](https://github.com/mapbox/rasterio/issues/507)
+I tried but the speed advantage comes from avoiding masked reads. Once we improve the efficiency of masked reads or invent another mechanism for handling nodata masks that is more efficient, we can pull the windowed approach [back into rasterio](https://github.com/mapbox/rasterio/issues/507)
 
 
 ### Benchmarks
