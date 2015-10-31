@@ -67,87 +67,54 @@ Very promising. On the Landsat scenetif set from `s3://mapbox-pxm-live/scenes/7-
 
 <table class="dataframe" border="1">
   <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th>memory</th>
-      <th>seconds</th>
-    </tr>
     <tr>
       <th>resolution</th>
-      <th>pixels</th>
-      <th>height and width</th>
-      <th>func</th>
-      <th></th>
-      <th></th>
+      <th>raster size</th>
+      <th>rio merge Memory (MB)</th>
+      <th>merge_rgba Memory (MB)</th>
+      <th>rio merge Time (s)</th>
+      <th>merge_rgba Time (s)</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <th rowspan="2" valign="top">300</th>
-      <th rowspan="2" valign="top">1089936</th>
-      <th rowspan="2" valign="top">1044</th>
-      <th>merge</th>
+      <th>300</th>
+      <th>1044x1044</th>
       <td>135</td>
-      <td>1.10</td>
-    </tr>
-    <tr>
-      <th>merge_rgba</th>
       <td>83</td>
+      <td>1.10</td>
       <td>0.70</td>
     </tr>
     <tr>
-      <th rowspan="2" valign="top">150</th>
-      <th rowspan="2" valign="top">4359744</th>
-      <th rowspan="2" valign="top">2088</th>
-      <th>merge</th>
+      <th>150</th>
+      <th>2088x2088</th>
       <td>220</td>
-      <td>3.20</td>
-    </tr>
-    <tr>
-      <th>merge_rgba</th>
       <td>107</td>
+      <td>3.20</td>
       <td>1.90</td>
     </tr>
     <tr>
-      <th rowspan="2" valign="top">90</th>
-      <th rowspan="2" valign="top">12103441</th>
-      <th rowspan="2" valign="top">3479</th>
-      <th>merge</th>
+      <th>90</th>
+      <th>3479x3479</th>
       <td>412</td>
-      <td>8.85</td>
-    </tr>
-    <tr>
-      <th>merge_rgba</th>
       <td>115</td>
+      <td>8.85</td>
       <td>3.10</td>
     </tr>
     <tr>
-      <th rowspan="2" valign="top">60</th>
-      <th rowspan="2" valign="top">27237961</th>
-      <th rowspan="2" valign="top">5219</th>
-      <th>merge</th>
+      <th>60</th>
+      <th>5219x5219</th>
       <td>750</td>
-      <td>25.00</td>
-    </tr>
-    <tr>
-      <th>merge_rgba</th>
       <td>121</td>
+      <td>25.00</td>
       <td>7.00</td>
     </tr>
     <tr>
-      <th rowspan="2" valign="top">30</th>
-      <th rowspan="2" valign="top">108910096</th>
-      <th rowspan="2" valign="top">10436</th>
-      <th>merge</th>
-      <td>1GB+ - crashed</td>
-      <td>crashed at 38 minutes</td>
-    </tr>
-    <tr>
-      <th>merge_rgba</th>
+      <th>30</th>
+      <th>10436x10436</th>
+      <td><i>1GB+ crashed</i></td>
       <td>145</td>
+      <td><i>crashed at 38 minutes</i></td>
       <td>19.80</td>
     </tr>
   </tbody>
