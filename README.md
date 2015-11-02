@@ -1,20 +1,12 @@
 # merge_rgba.py
 
-A `rio merge` alternative optimized for large RGBA scenetifs
+A `rio merge` alternative optimized for large RGBA scenetifs.
 
-**Note**
-This repository is in limbo and may move in one of several directions:
-1. These optimizations may be pulled directly into `rasterio` (see [this issue](https://github.com/mapbox/rasterio/issues/507))
-2. This may become an intergrated part of `pxm`
-3. This may stay as an independent repo and become a legit pip-installable, tested module
-
-## What it it?
-
-`merge_rgba.py` is a CLI with nearly identical arguments to `rio merge`. They accomplish the same task, merging many rasters into one. The differences are in the implementation:
+`rio merge-rgba` is a CLI with nearly identical arguments to `rio merge`. They accomplish the same task, merging many rasters into one. The differences are in the implementation:
 
 ```
-$ python merge_rgba.py --help
-Usage: merge_rgba.py [OPTIONS] INPUTS... OUTPUT
+$ rio merge-rgba --help
+Usage: rio merge-rgba [OPTIONS] INPUTS... OUTPUT
 
 Options:
   -o, --output PATH            Path to output file (optional alternative to a
@@ -36,7 +28,7 @@ Options:
   --help                       Show this message and exit.
 ```
 
-`merge_rgba.py`
+`rio merge-rgba`
 1. only accepts 4-band RGBA rasters
 2. writes the destination data to disk rather than an in-memory array
 3. reads/writes in windows corresponding to the destination block layout
@@ -50,9 +42,9 @@ While this does mean reading and writing to disk more frequently, having spatial
 
 ### Why only RGBA?
 
-`rio merge` is more flexible with regard to nodata. It relies on masked reads to handle that logic across all cases. 
+`rio merge` is more flexible with regard to nodata. It relies on reads with `masked=True` to handle that logic across all cases. 
 
-By reading with `masked=False` and using the alpha band as the sole source of nodata-ness, we get huge speedups over the rio merge approach. Roughly 40x faster for my test cases. The exact reasons behind the discrepency is TBD but since we're reading/writing more intensively with the windowed approach, we need to keep IO as efficient as possible.
+By contrast, `rio merge-rgba` requires RGBA images because, by reading with `masked=False` and using the alpha band as the sole source of nodata-ness, we get huge speedups over the rio merge approach. Roughly 40x faster for my test cases. The exact reasons behind the discrepency is TBD but since we're reading/writing more intensively with the windowed approach, we need to keep IO as efficient as possible.
 
 ### Why not improve rio merge
 

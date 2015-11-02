@@ -1,49 +1,15 @@
 import logging
 import math
-import os
 import numpy as np
 import rasterio
-import click
 from rasterio.transform import Affine
 from rasterio._base import get_index  # get_window
 
-from cligj import files_inout_arg, format_opt
-from rasterio.rio.helpers import resolve_inout
-from rasterio.rio import options
 
 logger = logging.getLogger('merge_rgba')
 
 
-@click.command(short_help="Merge a stack of raster datasets.")
-@files_inout_arg
-@options.output_opt
-@format_opt
-@options.bounds_opt
-@options.resolution_opt
-@click.option('--force-overwrite', '-f', 'force_overwrite', is_flag=True,
-              type=bool, default=False,
-              help="Do not prompt for confirmation before overwriting output "
-                   "file")
-@click.option('--precision', type=int, default=7,
-              help="Number of decimal places of precision in alignment of "
-                   "pixels")
-@options.creation_options
-def merge_rgba(files, output, driver, bounds, res, force_overwrite,
-               precision, creation_options):
-
-    output, files = resolve_inout(files=files, output=output)
-
-    if os.path.exists(output) and not force_overwrite:
-        raise click.ClickException(
-            "Output exists and won't be overwritten without the "
-            "`-f` option")
-
-    sources = [rasterio.open(f) for f in files]
-    merge_rbga_tool(sources, output, bounds=bounds, res=res,
-                    precision=precision)
-
-
-def merge_rbga_tool(sources, outtif, bounds=None, res=None, precision=7):
+def merge_rgba_tool(sources, outtif, bounds=None, res=None, precision=7):
     """A windowed, top-down approach to merging.
     For each block window, it loops through the sources,
     reads the corresponding source window until the block
@@ -139,7 +105,7 @@ def merge_rbga_tool(sources, outtif, bounds=None, res=None, precision=7):
                 # src_window = get_window(left, bottom, right, top,
                 #                         src.affine, precision=precision)
                 #
-                # With rio merge this just adds an extra row, but when the 
+                # With rio merge this just adds an extra row, but when the
                 # imprecision occurs at each block, you get artifacts
 
                 # Alternative, custom get_window using rounding
@@ -164,7 +130,3 @@ def merge_rbga_tool(sources, outtif, bounds=None, res=None, precision=7):
             dstrast.write(dstarr, window=dst_window)
 
     return output_transform
-
-
-if __name__ == "__main__":
-    merge_rgba()
