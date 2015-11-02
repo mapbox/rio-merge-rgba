@@ -1,4 +1,4 @@
-# merge_rgba.py
+# rio merge-rgba
 
 A `rio merge` alternative optimized for large RGBA scenetifs.
 
