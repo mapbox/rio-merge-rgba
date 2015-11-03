@@ -11,7 +11,6 @@ Usage: rio merge-rgba [OPTIONS] INPUTS... OUTPUT
 Options:
   -o, --output PATH            Path to output file (optional alternative to a
                                positional arg for some commands).
-  -f, --format, --driver TEXT  Output format driver
   --bounds FLOAT...            Output bounds: left bottom right top.
   -r, --res FLOAT              Output dataset resolution in units of
                                coordinate reference system. Pixels assumed to
