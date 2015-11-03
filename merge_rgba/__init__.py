@@ -9,7 +9,8 @@ from rasterio._base import get_index  # get_window
 logger = logging.getLogger('merge_rgba')
 
 
-def merge_rgba_tool(sources, outtif, bounds=None, res=None, precision=7):
+def merge_rgba_tool(sources, outtif, bounds=None, res=None, precision=7,
+                    creation_options={}):
     """A windowed, top-down approach to merging.
     For each block window, it loops through the sources,
     reads the corresponding source window until the block
@@ -74,9 +75,11 @@ def merge_rgba_tool(sources, outtif, bounds=None, res=None, precision=7):
     profile['height'] = output_height
     profile['width'] = output_width
 
-    # TODO nodata strategy to include non RGBA sources
     nodataval = 0
     profile['nodata'] = nodataval
+
+    # Creation opts
+    profile.update(creation_options)
 
     # create destination file
     with rasterio.open(outtif, 'w', **profile) as dstrast:

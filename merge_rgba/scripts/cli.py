@@ -39,6 +39,7 @@ def merge_rgba(files, output, bounds, res, force_overwrite,
 
     sources = [rasterio.open(f) for f in files]
     merge_rgba_tool(sources, output, bounds=bounds, res=res,
-                    precision=precision)
+                    precision=precision,
+                    creation_options=creation_options)
 
 cli.add_command(merge_rgba)

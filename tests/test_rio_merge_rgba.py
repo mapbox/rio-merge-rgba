@@ -1,17 +1,18 @@
 import sys
 import os
 import logging
+
 import numpy
 from click.testing import CliRunner
 from pytest import fixture
-
 import rasterio
-from merge_rgba.scripts.cli import merge_rgba
 from rasterio.rio.merge import merge
+from rasterio.enums import Compression
+
+from merge_rgba.scripts.cli import merge_rgba
 
 
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
-
 
 # Fixture to create test datasets within temporary directory
 @fixture(scope='function')
@@ -189,3 +190,62 @@ def test_merge_rgba_allfull(test_data_dir_2):
         data = out.read_band(1, masked=False)
         expected = numpy.ones((10, 10), dtype=rasterio.uint8)
         assert numpy.all(data == expected)
+
+
+@fixture(scope='function')
+def test_data_dir_3(tmpdir):
+    kwargs = {
+        "crs": {'init': 'epsg:4326'},
+        "transform": (-114, 0.1, 0, 46, 0, -0.1),
+        "count": 4,
+        "dtype": rasterio.uint8,
+        "driver": "GTiff",
+        "width": 32,
+        "height": 32,
+        "compress": "JPEG"
+    }
+
+    with rasterio.drivers():
+
+        with rasterio.open(str(tmpdir.join('a.tif')), 'w', **kwargs) as dst:
+            data = numpy.ones((4, 32, 32), dtype=rasterio.uint8)
+            data[3, :, :] = 255
+            dst.write(data)
+    return tmpdir
+
+
+def test_opts(test_data_dir_3):
+    outputname = str(test_data_dir_3.join('merged.tif'))
+    inputs = [str(x) for x in test_data_dir_3.listdir()]
+    inputs.sort()
+    runner = CliRunner()
+
+    co = ["--co", "tiled=true",
+          "--co", "blockxsize=16",
+          "--co", "blockysize=16"]
+    result = runner.invoke(merge_rgba, inputs + [outputname] + co)
+    assert result.exit_code == 0
+    assert os.path.exists(outputname)
+    with rasterio.open(outputname) as out:
+        assert out.count == 4
+        assert out.profile['tiled'] == True
+        assert out.profile['blockxsize'] == 16
+        assert out.profile['blockysize'] == 16
+        assert out.profile['compress'] == "jpeg"  # from src data
+        assert out.compression == Compression.jpeg
+
+    outputname = str(test_data_dir_3.join('merged2.tif'))
+    co = ["--co", "tiled=true",
+          "--co", "blockxsize=16",
+          "--co", "blockysize=16",
+          "--co", "compress=none"]
+    result = runner.invoke(merge_rgba, inputs + [outputname] + co)
+    assert result.exit_code == 0
+    assert os.path.exists(outputname)
+    with rasterio.open(outputname) as out:
+        assert out.count == 4
+        assert out.profile['tiled'] == True
+        assert out.profile['blockxsize'] == 16
+        assert out.profile['blockysize'] == 16
+        assert out.profile['compress'] == "none"
+        assert out.compression is None
