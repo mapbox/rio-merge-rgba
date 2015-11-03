@@ -16,7 +16,7 @@ A `rio merge` alternative optimized for large RGBA scenetifs
 This is both faster and more memory efficient but limited to RGBA rasters.
 """
 
-setup(name='merge-rgba',
+setup(name='rio-merge-rgba',
       version='0.1',
       description=u"rio merge alternative optimized for RGBA",
       long_description=long_description,
@@ -24,7 +24,7 @@ setup(name='merge-rgba',
       keywords='',
       author=u"Matthew Perry",
       author_email='perry@mapbox.com',
-      url='https://github.com/mapbox/merge_rgba',
+      url='https://github.com/mapbox/rio-merge-rgba',
       license='MIT',
       packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
       include_package_data=True,
