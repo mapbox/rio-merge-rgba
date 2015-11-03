@@ -17,7 +17,6 @@ def cli():
 @click.command(name="merge-rgba", short_help="Merge a stack of RGBA raster datasets.")
 @files_inout_arg
 @options.output_opt
-@format_opt
 @options.bounds_opt
 @options.resolution_opt
 @click.option('--force-overwrite', '-f', 'force_overwrite', is_flag=True,
@@ -28,7 +27,7 @@ def cli():
               help="Number of decimal places of precision in alignment of "
                    "pixels")
 @options.creation_options
-def merge_rgba(files, output, driver, bounds, res, force_overwrite,
+def merge_rgba(files, output, bounds, res, force_overwrite,
                precision, creation_options):
 
     output, files = resolve_inout(files=files, output=output)
