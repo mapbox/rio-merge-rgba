@@ -16,7 +16,7 @@ A `rio merge` alternative optimized for large RGBA scenetifs
 This is both faster and more memory efficient but limited to RGBA rasters.
 """
 
-setup(name='merge_rgba',
+setup(name='merge-rgba',
       version='0.1',
       description=u"rio merge alternative optimized for RGBA",
       long_description=long_description,
@@ -38,6 +38,6 @@ setup(name='merge_rgba',
       },
       entry_points="""
       [rasterio.rio_plugins]
-      mergergba=merge_rgba.scripts.cli:merge_rgba
+      merge-rgba=merge_rgba.scripts.cli:merge_rgba
       """
       )
