@@ -5,9 +5,10 @@ from setuptools import setup, find_packages
 long_description = """
 A `rio merge` alternative optimized for large RGBA scenetifs
 
-`merge_rgba` is a CLI with nearly identical arguments to `rio merge`. They accomplish the same task, merging many rasters into one. The differences are in the implementation:
+`rio merge-rgba` is a CLI with nearly identical arguments to `rio merge`. They accomplish the same task, merging many rasters into one. The differences are in the implementation:
 
-`merge_rgba`
+`rio merge-rgba`::
+
 1. only accepts 4-band RGBA rasters
 2. writes the destination data to disk rather than an in-memory array
 3. reads/writes in windows corresponding to the destination block layout
@@ -17,7 +18,7 @@ This is both faster and more memory efficient but limited to RGBA rasters.
 """
 
 setup(name='rio-merge-rgba',
-      version='0.1',
+      version='0.1.1',
       description=u"rio merge alternative optimized for RGBA",
       long_description=long_description,
       classifiers=[],
