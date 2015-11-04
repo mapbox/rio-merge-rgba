@@ -1,5 +1,7 @@
 # rio merge-rgba
 
+[![Build Status](https://magnum.travis-ci.com/mapbox/rio-merge-rgba.svg?token=pyxzY34Uw5pJTCJpD6xs&branch=master)](https://magnum.travis-ci.com/mapbox/rio-merge-rgba)
+
 A `rio merge` alternative optimized for large RGBA scenetifs.
 
 `rio merge-rgba` is a CLI with nearly identical arguments to `rio merge`. They accomplish the same task, merging many rasters into one. 
