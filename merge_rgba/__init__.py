@@ -27,7 +27,6 @@ def merge_rgba_tool(sources, outtif, bounds=None, res=None, precision=7,
     """
     first = sources[0]
     first_res = first.res
-    nodataval = first.nodatavals[0]
     dtype = first.dtypes[0]
     profile = first.profile
     profile.pop('affine')
@@ -75,8 +74,7 @@ def merge_rgba_tool(sources, outtif, bounds=None, res=None, precision=7,
     profile['height'] = output_height
     profile['width'] = output_width
 
-    nodataval = 0
-    profile['nodata'] = nodataval
+    profile['nodata'] = None  # rely on alpha mask
 
     # Creation opts
     profile.update(creation_options)
@@ -123,7 +121,9 @@ def merge_rgba_tool(sources, outtif, bounds=None, res=None, precision=7,
                                 boundless=True, masked=False)
 
                 # pixels without data yet are available to write
-                write_region = (dstarr[3] == 0)  # 0 is nodata
+                write_region = np.logical_and(
+                    (dstarr[3] == 0),  # 0 is nodata
+                    (temp[3] != 0))
                 np.copyto(dstarr, temp, where=write_region)
 
                 # check if dest has any nodata pixels available
