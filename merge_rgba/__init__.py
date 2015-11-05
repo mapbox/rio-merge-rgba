@@ -3,12 +3,21 @@ import math
 import numpy as np
 import rasterio
 from rasterio.transform import Affine
-from rasterio._base import get_index  # get_window
+from rasterio._base import get_index, get_window
+from rasterio.warp import reproject, RESAMPLING
 
 
-logger = logging.getLogger('merge_rgba')
+logger = logging.getLogger('merge-rgba')
 
 
+# def buffer_window(window, buff):
+#     buff = int(buff)
+#     ((r1, r2), (c1, c2)) = window
+#     return ((r1 - buff, r2 + buff),
+#             (c1 - buff, c2 + buff))
+
+
+# @profile
 def merge_rgba_tool(sources, outtif, bounds=None, res=None, precision=7,
                     creation_options={}):
     """A windowed, top-down approach to merging.
@@ -84,7 +93,11 @@ def merge_rgba_tool(sources, outtif, bounds=None, res=None, precision=7,
 
         for idx, dst_window in dstrast.block_windows():
 
+            # Get destination window and affine transform
             left, bottom, right, top = dstrast.window_bounds(dst_window)
+            dst_transform = Affine.translation(left, top)
+            dst_transform *= Affine.scale(res[0], -res[1])
+
             blocksize = ((dst_window[0][1] - dst_window[0][0]) *
                          (dst_window[1][1] - dst_window[1][0]))
 
@@ -99,31 +112,57 @@ def merge_rgba_tool(sources, outtif, bounds=None, res=None, precision=7,
             # a. everything is data; i.e. no nodata
             # b. no sources left
             for src in sources:
-                # The full_cover behavior is problematic here as it includes
-                # extra pixels along the bottom right when the sources are
-                # slightly misaligned
-                #
-                # src_window = get_window(left, bottom, right, top,
-                #                         src.affine, precision=precision)
-                #
-                # With rio merge this just adds an extra row, but when the
-                # imprecision occurs at each block, you get artifacts
+                # Full cover window helps here
+                src_window = get_window(left, bottom, right, top,
+                                        src.affine, precision=precision)
 
-                # Alternative, custom get_window using rounding
-                window_start = get_index(
-                    left, top, src.affine, op=round, precision=precision)
-                window_stop = get_index(
-                    right, bottom, src.affine, op=round, precision=precision)
-                src_window = tuple(zip(window_start, window_stop))
+                src_count = first.count
+                src_rows, src_cols = tuple(b - a for a, b in src_window)
+                src_shape = (src_count, src_rows, src_cols)
 
-                temp = np.zeros(dst_shape, dtype=dtype)
-                temp = src.read(out=temp, window=src_window,
-                                boundless=True, masked=False)
+                # ... and calculate the transform
+                src_w, src_s, src_e, src_n = src.window_bounds(src_window)
+                src_transform = Affine.translation(src_w, src_n)
+                src_transform *= Affine.scale(res[0], -res[1])
+
+
+                if src_transform == dst_transform and src_shape == dst_shape:
+                    # If transform and shapes are equal
+                    # no need to do any resampling
+                    temp = src.read(
+                        window=src_window, boundless=True, masked=False)
+                else:
+                    # import ipdb; ipdb.set_trace()
+                    # TODO Buffer the source window to avoid edge effects
+                    # buffer = False   # todo optional arg
+                    # if buffer:
+                    #     src_window = buffer_window(src_window, 2)
+                    #     # Recalc stuff
+
+                    temp = np.empty(dst_shape, dtype=dtype)
+                    src_arr = src.read(
+                        window=src_window, boundless=True, masked=False)
+
+                    crs = {}
+                    reproject(
+                        src_arr,
+                        temp,
+                        src_transform=src_transform,
+                        src_crs=crs,
+                        src_nodata=None,
+                        dst_transform=dst_transform,
+                        dst_crs=crs,
+                        dst_nodata=None,
+                        resampling=RESAMPLING.bilinear)
+                        # resampling=RESAMPLING.lanczos)
+
+                    temp[temp == 1] = 0  # TODO fix hack around resampling returning 1s
 
                 # pixels without data yet are available to write
                 write_region = np.logical_and(
                     (dstarr[3] == 0),  # 0 is nodata
                     (temp[3] != 0))
+
                 np.copyto(dstarr, temp, where=write_region)
 
                 # check if dest has any nodata pixels available
@@ -133,3 +172,11 @@ def merge_rgba_tool(sources, outtif, bounds=None, res=None, precision=7,
             dstrast.write(dstarr, window=dst_window)
 
     return output_transform
+
+
+if __name__ == "__main__":
+    import sys
+    files = sys.argv[1:]
+    output = "/tmp/test_merge_rgba.tif"
+    sources = [rasterio.open(f) for f in files]
+    merge_rgba_tool(sources, output)
