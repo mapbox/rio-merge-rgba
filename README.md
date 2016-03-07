@@ -2,7 +2,7 @@
 
 [![Build Status](https://magnum.travis-ci.com/mapbox/rio-merge-rgba.svg?token=pyxzY34Uw5pJTCJpD6xs&branch=master)](https://magnum.travis-ci.com/mapbox/rio-merge-rgba)
 
-A `rio merge` alternative optimized for large RGBA scenetifs.
+A `rio merge` alternative optimized for large RGBA tifs
 
 `rio merge-rgba` is a CLI with nearly identical arguments to `rio merge`. They accomplish the same task, merging many rasters into one. 
 
@@ -55,7 +55,7 @@ I tried but the speed advantage comes from avoiding masked reads. Once we improv
 
 ### Benchmarks
 
-Very promising. On the Landsat scenetif set from `s3://mapbox-pxm-live/scenes/7-21-49*` - 23 rasters in total. I created reduced resolution versions of each in order to test the performance charachteristics as sizes increase.
+Very promising. On the Landsat scenes, 23 rasters in total. I created reduced resolution versions of each in order to test the performance charachteristics as sizes increase.
 
 <table class="dataframe" border="1">
   <thead>
@@ -127,3 +127,7 @@ In rio merge, which reads the entire raster at once, this can manifest itself as
 With `merge_rgba.py`, if we used the default full cover window, errors may appear within the image at block window boundaries where e.g. a 257x257 window is read into a 256x256 destination. To avoid this, we effectively embed a reimplementation of rasterio's `get_window` using the `round` operator which improves our chances that the pixel boundaries are snapped to appropriate bounds.
 
 You may see small differences between rio merge and merge_rgba as a result but they *should* be limited to the single bottom row and right-most column.
+
+### Note about resampling
+
+Neither `rio merge` nor `rio merge-rgba` allow for bilinear resampling. The "resampling" is done effectively with a crude nearest neighbor via `np.copyto`. This means that up to 1/2 cell pixel shifts can occur if inputs are misaligned.
