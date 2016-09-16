@@ -2,11 +2,12 @@ import sys
 import os
 import logging
 
+from affine import Affine
 import numpy
 from click.testing import CliRunner
 from pytest import fixture
 import rasterio
-from rasterio.rio.merge import merge
+from rasterio.rio.main import main_group
 from rasterio.enums import Compression
 
 from merge_rgba.scripts.cli import merge_rgba
@@ -19,7 +20,7 @@ logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 def test_data_dir_1(tmpdir):
     kwargs = {
         "crs": {'init': 'epsg:4326'},
-        "transform": (-114, 0.2, 0, 46, 0, -0.2),
+        "transform": Affine.from_gdal(-114, 0.2, 0, 46, 0, -0.2),
         "count": 4,
         "dtype": rasterio.uint8,
         "driver": "GTiff",
@@ -27,7 +28,7 @@ def test_data_dir_1(tmpdir):
         "height": 10
     }
 
-    with rasterio.drivers():
+    with rasterio.Env():
 
         with rasterio.open(str(tmpdir.join('b.tif')), 'w', **kwargs) as dst:
             data = numpy.zeros((4, 10, 10), dtype=rasterio.uint8)
@@ -54,13 +55,13 @@ def test_merge_rgba(test_data_dir_1):
     assert os.path.exists(outputname)
     with rasterio.open(outputname) as out:
         assert out.count == 4
-        data = out.read_band(1, masked=False)
+        data = out.read(1, masked=False)
         expected = numpy.zeros((10, 10), dtype=rasterio.uint8)
         expected[0:6, 0:6] = 255
         expected[4:8, 4:8] = 254
         assert numpy.all(data == expected)
 
-        alpha = out.read_band(4, masked=False)
+        alpha = out.read(4, masked=False)
         expected = numpy.zeros((10, 10), dtype=rasterio.uint8)
         expected[0:6, 0:6] = 255
         expected[4:8, 4:8] = 255
@@ -77,7 +78,7 @@ def test_merge_rgba_vs_merge(test_data_dir_1):
     result = runner.invoke(merge_rgba, inputs + [output1])
     assert result.exit_code == 0
     assert os.path.exists(output1)
-    result = runner.invoke(merge, inputs + [output2])
+    result = runner.invoke(main_group, ['merge'] + inputs + [output2])
     assert result.exit_code == 0
     assert os.path.exists(output1)
 
@@ -95,7 +96,7 @@ def test_merge_rgba_bounds(test_data_dir_1):
     assert result.exit_code == 0
     with rasterio.open(outputname) as out:
         assert out.count == 4
-        data = out.read_band(1, masked=False)
+        data = out.read(1, masked=False)
         expected = numpy.array(
             [[255, 255, 255,   0],
              [255, 254, 254, 254],
@@ -114,7 +115,7 @@ def test_merge_rgba_res(test_data_dir_1):
     assert result.exit_code == 0
     with rasterio.open(outputname) as out:
         assert out.count == 4
-        data = out.read_band(1, masked=False)
+        data = out.read(1, masked=False)
         expected = numpy.array(
             [[255, 255, 255,   0,   0],
              [255, 255, 255,   0,   0],
@@ -146,14 +147,14 @@ def test_rgba_only(tmpdir):
     runner = CliRunner()
     result = runner.invoke(merge_rgba, inputs + [outputname])
     assert result.exit_code == -1
-    assert result.exception.message == 'Inputs must be 4-band RGBA rasters'
+    assert 'Inputs must be 4-band RGBA rasters' in str(result.exception) 
 
 
 @fixture(scope='function')
 def test_data_dir_2(tmpdir):
     kwargs = {
         "crs": {'init': 'epsg:4326'},
-        "transform": (-114, 0.2, 0, 46, 0, -0.2),
+        "transform": Affine.from_gdal(-114, 0.2, 0, 46, 0, -0.2),
         "count": 4,
         "dtype": rasterio.uint8,
         "driver": "GTiff",
@@ -161,7 +162,7 @@ def test_data_dir_2(tmpdir):
         "height": 10
     }
 
-    with rasterio.drivers():
+    with rasterio.Env():
 
         with rasterio.open(str(tmpdir.join('b.tif')), 'w', **kwargs) as dst:
             data = numpy.zeros((4, 10, 10), dtype=rasterio.uint8)
@@ -187,7 +188,7 @@ def test_merge_rgba_allfull(test_data_dir_2):
     assert os.path.exists(outputname)
     with rasterio.open(outputname) as out:
         assert out.count == 4
-        data = out.read_band(1, masked=False)
+        data = out.read(1, masked=False)
         expected = numpy.ones((10, 10), dtype=rasterio.uint8)
         assert numpy.all(data == expected)
 
@@ -196,7 +197,7 @@ def test_merge_rgba_allfull(test_data_dir_2):
 def test_data_dir_3(tmpdir):
     kwargs = {
         "crs": {'init': 'epsg:4326'},
-        "transform": (-114, 0.1, 0, 46, 0, -0.1),
+        "transform": Affine.from_gdal(-114, 0.1, 0, 46, 0, -0.1),
         "count": 4,
         "dtype": rasterio.uint8,
         "driver": "GTiff",
@@ -205,7 +206,7 @@ def test_data_dir_3(tmpdir):
         "compress": "JPEG"
     }
 
-    with rasterio.drivers():
+    with rasterio.Env():
 
         with rasterio.open(str(tmpdir.join('a.tif')), 'w', **kwargs) as dst:
             data = numpy.ones((4, 32, 32), dtype=rasterio.uint8)
