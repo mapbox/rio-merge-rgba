@@ -34,9 +34,7 @@ before_install:
   - pip install -U pip
   - pip install wheel
 install:
-  - if [[ $RASTERIO == 'master' ]]; then pip install numpy cython; pip install git+https://github.com/mapbox/rasterio.git; fi
-  - if [[ $RASTERIO == 'recent' ]]; then pip wheel rasterio; pip install rasterio; fi
-  - if [[ $RASTERIO != 'recent' ]]; then pip wheel "rasterio==$RASTERIO"; pip install "rasterio==$RASTERIO"; fi
+  - if [[ $RASTERIO == 'master' ]]; then pip install numpy cython; pip install git+https://github.com/mapbox/rasterio.git; elif [[ $RASTERIO == 'recent' ]]; then pip wheel rasterio; pip install rasterio; else pip wheel "rasterio==$RASTERIO"; pip install "rasterio==$RASTERIO"; fi
   - pip install -r requirements-dev.txt
   - pip install -e .
   - pip install coveralls
