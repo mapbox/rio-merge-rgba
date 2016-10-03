@@ -1,6 +1,6 @@
 # rio merge-rgba
 
-[![Build Status](https://magnum.travis-ci.com/mapbox/rio-merge-rgba.svg?token=pyxzY34Uw5pJTCJpD6xs&branch=master)](https://magnum.travis-ci.com/mapbox/rio-merge-rgba)
+[![Build Status](https://travis-ci.org/mapbox/rio-merge-rgba.svg)](https://travis-ci.org/mapbox/rio-merge-rgba.svg)
 
 A `rio merge` alternative optimized for large RGBA tifs
 

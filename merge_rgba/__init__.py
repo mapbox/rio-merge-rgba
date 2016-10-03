@@ -3,7 +3,17 @@ import math
 import numpy as np
 import rasterio
 from rasterio.transform import Affine
-from rasterio._base import get_index  # get_window
+
+try:
+    from rasterio.transform import rowcol  # rasterio>=1.0
+except ImportError:
+    # Use wrapper function around deprecated rasterio pre-1.0 function
+    from rasterio._base import get_index
+    from rasterio.transform import guard_transform
+
+    def rowcol(transform, x, y, op, precision):
+        return get_index(
+            x, y, guard_transform(transform), op=op, precision=precision)
 
 
 logger = logging.getLogger('merge_rgba')
@@ -29,7 +39,6 @@ def merge_rgba_tool(sources, outtif, bounds=None, res=None, precision=7,
     first_res = first.res
     dtype = first.dtypes[0]
     profile = first.profile
-    profile.pop('affine')
 
     # Extent from option or extent of all inputs.
     if bounds:
@@ -104,16 +113,16 @@ def merge_rgba_tool(sources, outtif, bounds=None, res=None, precision=7,
                 # slightly misaligned
                 #
                 # src_window = get_window(left, bottom, right, top,
-                #                         src.affine, precision=precision)
+                #                         src.transform, precision=precision)
                 #
                 # With rio merge this just adds an extra row, but when the
                 # imprecision occurs at each block, you get artifacts
 
                 # Alternative, custom get_window using rounding
-                window_start = get_index(
-                    left, top, src.affine, op=round, precision=precision)
-                window_stop = get_index(
-                    right, bottom, src.affine, op=round, precision=precision)
+                window_start = rowcol(
+                    src.transform, left, top, op=round, precision=precision)
+                window_stop = rowcol(
+                    src.transform, right, bottom, op=round, precision=precision)
                 src_window = tuple(zip(window_start, window_stop))
 
                 temp = np.zeros(dst_shape, dtype=dtype)
