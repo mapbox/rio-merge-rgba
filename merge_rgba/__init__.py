@@ -94,12 +94,17 @@ def merge_rgba_tool(sources, outtif, bounds=None, res=None, precision=7,
         for idx, dst_window in dstrast.block_windows():
 
             left, bottom, right, top = dstrast.window_bounds(dst_window)
-            blocksize = ((dst_window[0][1] - dst_window[0][0]) *
-                         (dst_window[1][1] - dst_window[1][0]))
+            if isinstance(dst_window, rasterio.windows.Window):
+                blocksize = dst_window.width
+                dst_rows, dst_cols = (dst_window.height, dst_window.width)
+            else:
+                # rasterio < 1.0, tuple
+                blocksize = ((dst_window[0][1] - dst_window[0][0]) *
+                             (dst_window[1][1] - dst_window[1][0]))
+                dst_rows, dst_cols = tuple(b - a for a, b in dst_window)
 
             # initialize array destined for the block
             dst_count = first.count
-            dst_rows, dst_cols = tuple(b - a for a, b in dst_window)
             dst_shape = (dst_count, dst_rows, dst_cols)
             logger.debug("Temp shape: %r", dst_shape)
             dstarr = np.zeros(dst_shape, dtype=dtype)
