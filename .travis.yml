@@ -23,11 +23,11 @@ matrix:
       env: RASTERIO=recent
     - python: 2.7
       env: RASTERIO=master
-    - python: 3.5
+    - python: 3.6
       env: RASTERIO=0.36
-    - python: 3.5
+    - python: 3.6
       env: RASTERIO=recent
-    - python: 3.5
+    - python: 3.6
       env: RASTERIO=master
 
 before_install:
