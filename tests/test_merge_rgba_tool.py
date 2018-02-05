@@ -16,3 +16,5 @@ def sources():
 def test_merge_rgba_tool(sources):
     outtif = tempfile.NamedTemporaryFile(suffix='.tif').name
     merge_rgba_tool(sources, outtif)
+    with rasterio.open(outtif) as merged:
+        assert merged.shape == (600, 600)
