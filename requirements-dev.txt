@@ -1,4 +1,4 @@
 pytest
 pytest-coverage
-rasterio
+rasterio>=1.0a12
 click
