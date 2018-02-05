@@ -2,18 +2,7 @@ import logging
 import math
 import numpy as np
 import rasterio
-from rasterio.transform import Affine
-
-try:
-    from rasterio.transform import rowcol  # rasterio>=1.0
-except ImportError:
-    # Use wrapper function around deprecated rasterio pre-1.0 function
-    from rasterio._base import get_index
-    from rasterio.transform import guard_transform
-
-    def rowcol(transform, x, y, op, precision):
-        return get_index(
-            x, y, guard_transform(transform), op=op, precision=precision)
+from rasterio.transform import Affine, rowcol
 
 
 logger = logging.getLogger('merge_rgba')
@@ -94,14 +83,9 @@ def merge_rgba_tool(sources, outtif, bounds=None, res=None, precision=7,
         for idx, dst_window in dstrast.block_windows():
 
             left, bottom, right, top = dstrast.window_bounds(dst_window)
-            if isinstance(dst_window, rasterio.windows.Window):
-                blocksize = dst_window.width
-                dst_rows, dst_cols = (dst_window.height, dst_window.width)
-            else:
-                # rasterio < 1.0, tuple
-                blocksize = ((dst_window[0][1] - dst_window[0][0]) *
-                             (dst_window[1][1] - dst_window[1][0]))
-                dst_rows, dst_cols = tuple(b - a for a, b in dst_window)
+
+            blocksize = dst_window.width
+            dst_rows, dst_cols = (dst_window.height, dst_window.width)
 
             # initialize array destined for the block
             dst_count = first.count

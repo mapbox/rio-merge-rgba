@@ -18,7 +18,7 @@ This is both faster and more memory efficient but limited to RGBA rasters.
 """
 
 setup(name='rio-merge-rgba',
-      version='0.3.0',
+      version='0.4.0',
       description=u"rio merge alternative optimized for RGBA",
       long_description=long_description,
       classifiers=[],
@@ -32,7 +32,7 @@ setup(name='rio-merge-rgba',
       zip_safe=False,
       install_requires=[
           'click',
-          'rasterio'
+          'rasterio>=1.0a12'
       ],
       extras_require={
           'test': ['pytest', 'pytest-cov'],

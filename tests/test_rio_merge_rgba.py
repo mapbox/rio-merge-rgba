@@ -86,12 +86,13 @@ def test_merge_rgba_vs_merge(test_data_dir_1):
         with rasterio.open(output2) as out2:
             assert numpy.array_equal(out1.read(), out2.read())
 
+
 def test_merge_rgba_bounds(test_data_dir_1):
     outputname = str(test_data_dir_1.join('merged.tif'))
     inputs = [str(x) for x in test_data_dir_1.listdir()]
     inputs.sort()
     runner = CliRunner()
-    bounds = ["--bounds"] + "-113.4 44.8 -112.8 45.4".split()
+    bounds = ["--bounds", '-113.4 44.8 -112.8 45.4']
     result = runner.invoke(merge_rgba, inputs + [outputname] + bounds)
     assert result.exit_code == 0
     with rasterio.open(outputname) as out:
