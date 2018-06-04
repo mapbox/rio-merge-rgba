@@ -32,7 +32,7 @@ setup(name='rio-merge-rgba',
       zip_safe=False,
       install_requires=[
           'click',
-          'rasterio>=1.0a12'
+          'rasterio>=1.0b1'
       ],
       extras_require={
           'test': ['pytest', 'pytest-cov'],
