@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/mapbox/rio-merge-rgba.svg)](https://travis-ci.org/mapbox/rio-merge-rgba.svg)
 
-## Installation
+## Installation for development
 
 Python 3.6+ required.
 
