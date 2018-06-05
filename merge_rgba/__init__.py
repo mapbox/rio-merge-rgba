@@ -6,15 +6,16 @@ from rasterio.transform import Affine, rowcol
 
 
 logger = logging.getLogger(
-        "merge_rgba"
-        
-        
-        )
 
 
-def merge_rgba_tool(
-    sources, outtif, bounds=None, res=None, precision=7, creation_options={}
-):
+'merge_rgba'
+
+
+)
+
+
+def merge_rgba_tool(sources, outtif, bounds=None, res=None, precision=7,
+                    creation_options={}):
     """A windowed, top-down approach to merging.
     For each block window, it loops through the sources,
     reads the corresponding source window until the block
@@ -46,7 +47,7 @@ def merge_rgba_tool(
             left, bottom, right, top = src.bounds
             xs.extend([left, right])
             ys.extend([bottom, top])
-            if src.profile["count"] != 4:  # TODO, how to test for alpha?
+            if src.profile['count'] != 4:  # TODO, how to test for alpha?
                 raise ValueError("Inputs must be 4-band RGBA rasters")
         dst_w, dst_s, dst_e, dst_n = min(xs), min(ys), max(xs), max(ys)
     logger.debug("Output bounds: %r", (dst_w, dst_s, dst_e, dst_n))
@@ -73,17 +74,17 @@ def merge_rgba_tool(
     logger.debug("Output width: %d, height: %d", output_width, output_height)
     logger.debug("Adjusted bounds: %r", (dst_w, dst_s, dst_e, dst_n))
 
-    profile["transform"] = output_transform
-    profile["height"] = output_height
-    profile["width"] = output_width
+    profile['transform'] = output_transform
+    profile['height'] = output_height
+    profile['width'] = output_width
 
-    profile["nodata"] = None  # rely on alpha mask
+    profile['nodata'] = None  # rely on alpha mask
 
     # Creation opts
     profile.update(creation_options)
 
     # create destination file
-    with rasterio.open(outtif, "w", **profile) as dstrast:
+    with rasterio.open(outtif, 'w', **profile) as dstrast:
 
         for idx, dst_window in dstrast.block_windows():
 
@@ -114,22 +115,19 @@ def merge_rgba_tool(
 
                 # Alternative, custom get_window using rounding
                 window_start = rowcol(
-                    src.transform, left, top, op=round, precision=precision
-                )
+                    src.transform, left, top, op=round, precision=precision)
                 window_stop = rowcol(
-                    src.transform, right, bottom, op=round, precision=precision
-                )
+                    src.transform, right, bottom, op=round, precision=precision)
                 src_window = tuple(zip(window_start, window_stop))
 
                 temp = np.zeros(dst_shape, dtype=dtype)
-                temp = src.read(
-                    out=temp, window=src_window, boundless=True, masked=False
-                )
+                temp = src.read(out=temp, window=src_window,
+                                boundless=True, masked=False)
 
                 # pixels without data yet are available to write
                 write_region = np.logical_and(
-                    (dstarr[3] == 0), (temp[3] != 0)  # 0 is nodata
-                )
+                    (dstarr[3] == 0),  # 0 is nodata
+                    (temp[3] != 0))
                 np.copyto(dstarr, temp, where=write_region)
 
                 # check if dest has any nodata pixels available
