@@ -17,6 +17,8 @@ install:
   - pip install -r requirements-dev.txt
   - pip install -e .
   - pip install coveralls
-script: "py.test --cov merge_rgba --cov-report term-missing"
+script:
+  - "py.test --cov merge_rgba --cov-report term-missing"
+  - "git diff-tree --no-commit-id --name-only -r $REVISION | xargs pre-commit run --files"
 after_success:
   - coveralls

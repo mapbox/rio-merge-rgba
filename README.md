@@ -2,9 +2,20 @@
 
 [![Build Status](https://travis-ci.org/mapbox/rio-merge-rgba.svg)](https://travis-ci.org/mapbox/rio-merge-rgba.svg)
 
+## Installation
+
+Python 3.6+ required.
+
+```
+pip install -r requirements-dev.txt
+pre-commit install # for formatter options
+```
+
+## Description
+
 A `rio merge` alternative optimized for large RGBA tifs
 
-`rio merge-rgba` is a CLI with nearly identical arguments to `rio merge`. They accomplish the same task, merging many rasters into one. 
+`rio merge-rgba` is a CLI with nearly identical arguments to `rio merge`. They accomplish the same task, merging many rasters into one.
 
 ```
 $ rio merge-rgba --help
@@ -36,7 +47,7 @@ The differences are in the implementation, `rio merge-rgba`:
 3. reads/writes in windows corresponding to the destination block layout
 4. once a window is filled with data values, the rest of the source files are skipped for that window
 
-### Why windowed and why write to disk? 
+### Why windowed and why write to disk?
 
 Memory efficiency. You'll never load more than `2 * blockxsize * blockysize` pixels into numpy arrays at one time, assuming garbage collection is infallible and there are no memory leaks.
 
@@ -44,7 +55,7 @@ While this does mean reading and writing to disk more frequently, having spatial
 
 ### Why only RGBA?
 
-`rio merge` is more flexible with regard to nodata. It relies on reads with `masked=True` to handle that logic across all cases. 
+`rio merge` is more flexible with regard to nodata. It relies on reads with `masked=True` to handle that logic across all cases.
 
 By contrast, `rio merge-rgba` requires RGBA images because, by reading with `masked=False` and using the alpha band as the sole source of nodata-ness, we get huge speedups over the rio merge approach. Roughly 40x faster for my test cases. The exact reasons behind the discrepency is TBD but since we're reading/writing more intensively with the windowed approach, we need to keep IO as efficient as possible.
 

@@ -2,3 +2,5 @@ pytest
 pytest-coverage
 rasterio>=1.0a12
 click
+pre-commit
+black
