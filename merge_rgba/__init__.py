@@ -5,7 +5,11 @@ import rasterio
 from rasterio.transform import Affine, rowcol
 
 
-logger = logging.getLogger("merge_rgba")
+logger = logging.getLogger(
+        "merge_rgba"
+        
+        
+        )
 
 
 def merge_rgba_tool(
