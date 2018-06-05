@@ -249,5 +249,4 @@ def test_opts(test_data_dir_3):
         assert out.profile['tiled'] == True
         assert out.profile['blockxsize'] == 16
         assert out.profile['blockysize'] == 16
-        assert out.profile['compress'] == "none"
         assert out.compression is None
