@@ -1,4 +1,5 @@
 pytest
 pytest-coverage
-rasterio>=1.0a12
+rasterio>=1.0b1
 click
+pre-commit
