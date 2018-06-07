@@ -1,4 +1,5 @@
-from codecs import open as codecs_open
+"""Setup for merge_rgba."""
+
 from setuptools import setup, find_packages
 
 # Get the long description from the relevant file
@@ -17,28 +18,24 @@ A `rio merge` alternative optimized for large RGBA scenetifs
 This is both faster and more memory efficient but limited to RGBA rasters.
 """
 
-setup(name='rio-merge-rgba',
-      version='0.4.0',
-      description=u"rio merge alternative optimized for RGBA",
-      long_description=long_description,
-      classifiers=[],
-      keywords='',
-      author=u"Matthew Perry",
-      author_email='perry@mapbox.com',
-      url='https://github.com/mapbox/rio-merge-rgba',
-      license='MIT',
-      packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
-      include_package_data=True,
-      zip_safe=False,
-      install_requires=[
-          'click',
-          'rasterio>=1.0b1'
-      ],
-      extras_require={
-          'test': ['pytest', 'pytest-cov'],
-      },
-      entry_points="""
+setup(
+    name="rio-merge-rgba",
+    version="0.4.0",
+    description=u"rio merge alternative optimized for RGBA",
+    long_description=long_description,
+    classifiers=[],
+    keywords="",
+    author=u"Matthew Perry",
+    author_email="perry@mapbox.com",
+    url="https://github.com/mapbox/rio-merge-rgba",
+    license="MIT",
+    packages=find_packages(exclude=["ez_setup", "examples", "tests"]),
+    include_package_data=True,
+    zip_safe=False,
+    install_requires=["click", "rasterio>=1.0b1"],
+    extras_require={"test": ["pytest", "pytest-cov"]},
+    entry_points="""
       [rasterio.rio_plugins]
       merge-rgba=merge_rgba.scripts.cli:merge_rgba
-      """
-      )
+      """,
+)
