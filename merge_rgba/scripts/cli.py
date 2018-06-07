@@ -1,9 +1,11 @@
+"""Command line interface."""
+
 import logging
 import os
 import rasterio
 import click
 
-from cligj import files_inout_arg, format_opt
+from cligj import files_inout_arg
 from rasterio.rio.helpers import resolve_inout
 from rasterio.rio import options
 from merge_rgba import merge_rgba_tool
@@ -13,6 +15,7 @@ logger = logging.getLogger("merge_rgba")
 
 @click.group()
 def cli():
+    """CLI group for merge_rgba."""
     pass
 
 
@@ -40,7 +43,7 @@ def cli():
 def merge_rgba(
     files, output, bounds, res, force_overwrite, precision, creation_options
 ):
-
+    """Entry point for merge_rgba."""
     output, files = resolve_inout(files=files, output=output)
 
     if os.path.exists(output) and not force_overwrite:

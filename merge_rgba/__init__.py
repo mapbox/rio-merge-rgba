@@ -1,3 +1,5 @@
+"""Top level module for merge_rgba."""
+
 import logging
 import math
 import numpy as np
