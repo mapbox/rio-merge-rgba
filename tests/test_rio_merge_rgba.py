@@ -252,7 +252,7 @@ def test_opts(test_data_dir_3):
     assert result.exit_code == 0
     assert os.path.exists(outputname)
     with rasterio.open(outputname) as out:
-        assert out.count is 4
+        assert out.count == 4
         assert out.profile["tiled"] is True
         assert out.profile["blockxsize"] == 16
         assert out.profile["blockysize"] == 16
