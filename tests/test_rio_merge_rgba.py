@@ -150,7 +150,7 @@ def test_rgba_only(tmpdir):
     inputs = ["tests/data/rgb1.tif"]
     runner = CliRunner()
     result = runner.invoke(merge_rgba, inputs + [outputname])
-    assert result.exit_code == -1
+    assert result.exit_code == 1
     assert "Inputs must be 4-band RGBA rasters" in str(result.exception)
 
 

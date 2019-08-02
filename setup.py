@@ -32,7 +32,7 @@ setup(
     packages=find_packages(exclude=["ez_setup", "examples", "tests"]),
     include_package_data=True,
     zip_safe=False,
-    install_requires=["click", "rasterio>=1.0b1"],
+    install_requires=["click~=7.0", "rasterio~=1.0"],
     extras_require={"test": ["pytest", "pytest-cov"]},
     entry_points="""
       [rasterio.rio_plugins]
